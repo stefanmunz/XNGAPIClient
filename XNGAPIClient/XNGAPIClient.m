@@ -289,6 +289,24 @@ static NSString * const XNGAPIClientOAuthAccessTokenPath = @"v1/access_token";
     return nil;
 }
 
+#pragma mark - Cross Login on XING Websites
+
+- (NSMutableURLRequest *)redirectURLRequestForURL:(NSURL *)destinationURL {
+    if (self.isLoggedin == NO) {
+        return destinationURL;
+    }
+    BOOL destinationHostContainsXing = [destinationURL.host rangeOfString:@"xing.com" options:NSCaseInsensitiveSearch].length > 0;
+    if (destinationHostContainsXing == NO) {
+        return destinationURL;
+    }
+
+    NSDictionary *parameters = @{ @"dest_url": destinationURL };
+    NSMutableURLRequest *request = [self requestWithMethod:@"GET"
+                                                      path:@"v1/redirect"
+                                                parameters:parameters];
+    return request;
+}
+
 #pragma mark - block-based GET / PUT / POST / DELETE
 
 - (void)getJSONPath:(NSString *)path

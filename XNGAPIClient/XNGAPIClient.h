@@ -79,6 +79,10 @@ extern NSString * const XNGAPIClientDeprecationWarningNotification;
 - (BOOL)isLoggedin;
 - (void)logout;
 
+#pragma mark - Cross Login on XING Websites
+
+- (NSMutableURLRequest *)redirectURLRequestForURL:(NSURL *)destinationURL;
+
 #pragma mark - block-based GET / PUT / POST / DELETE
 
 /**
