@@ -293,17 +293,24 @@ static NSString * const XNGAPIClientOAuthAccessTokenPath = @"v1/access_token";
 
 - (NSMutableURLRequest *)redirectURLRequestForURL:(NSURL *)destinationURL {
     if (self.isLoggedin == NO) {
-        return destinationURL;
+        return [NSMutableURLRequest requestWithURL:destinationURL];
     }
+
     BOOL destinationHostContainsXing = [destinationURL.host rangeOfString:@"xing.com" options:NSCaseInsensitiveSearch].length > 0;
     if (destinationHostContainsXing == NO) {
-        return destinationURL;
+        return [NSMutableURLRequest requestWithURL:destinationURL];
     }
 
     NSDictionary *parameters = @{ @"dest_url": destinationURL };
-    NSMutableURLRequest *request = [self requestWithMethod:@"GET"
+    NSMutableURLRequest *afnetworkingRequest = [self requestWithMethod:@"GET"
                                                       path:@"v1/redirect"
                                                 parameters:parameters];
+    // this is a weird behavior. If we use the urlrequest from afnetworking we
+    // run into a problem in uiwebview: the redirecting works, but the
+    // login cookie somehow is not set correctly.
+    NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:afnetworkingRequest.URL];
+    [request setAllHTTPHeaderFields:afnetworkingRequest.allHTTPHeaderFields];
+
     return request;
 }
 
